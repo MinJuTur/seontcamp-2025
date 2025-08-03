@@ -13,18 +13,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/users") // 공통 prefix
 @RequiredArgsConstructor
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/join")
+    @PostMapping("/join") // 회원가입 요청 처리
     public UserJoinResponse join(@RequestBody UserJoinRequest request) {
         return userService.register(request);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login") // 로그인 요청 처리
     public ResponseEntity<UserLoginResponse> login(@RequestBody UserLoginRequest request) {
         String token = userService.login(request.getUserId(), request.getPassword());
         return ResponseEntity.ok(new UserLoginResponse(token));
