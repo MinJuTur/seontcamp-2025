@@ -10,22 +10,25 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    private final long EXPIRATION_MS = 1000 * 60 * 60 * 3; // 3hour
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // JWT 서명에 사용할 비밀 키 생성
+    private final long EXPIRATION_MS = 1000 * 60 * 60 * 3; // 토큰 유효 시간: 3H
 
+    // JWT 토큰 생성 메서드(로그인 시 사용)
     public String generateToken(String userId) {
         return Jwts.builder()
                 .setSubject(userId)
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
-                .signWith(key)
+                .setIssuedAt(new Date()) // 토큰 발급 시간
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS)) // 만료 시간
+                .signWith(key) // 서명에 사용할 키 설정
                 .compact();
     }
 
+    // 사용자 ID 추출 메서드
     public String getUserIdFromToken(String token) {
         return parseClaims(token).getBody().getSubject();
     }
 
+    // JWT 유효성 검사 메서드
     public boolean isTokenValid(String token) {
         try {
             parseClaims(token);
@@ -35,6 +38,7 @@ public class JwtUtil {
         }
     }
 
+    // 토큰 파싱하여 Claims 반환하는 내부 메서드
     private Jws<Claims> parseClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)

@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-public class SecurityConfig {
+public class SecurityConfig { // 애플리케이션 시작 시 단 한 번 실행
 
     private final JwtUtil jwtUtil;
 
@@ -24,7 +24,7 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(); // BCrypt 방식 사용
     }
 
     @Bean
@@ -36,18 +36,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(
                         org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
+                // 요청별 인증 및 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
+                        // 회원가입, 로그인, H2 콘솔은 인증 없이 접근 허용
                         .requestMatchers(HttpMethod.POST, "/api/users/join").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                // 인증이 필요한 요청에 대해 JwtFilter가 먼저 실행되도록 필터 체인 구성
                 .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
-                .headers(headers -> headers
-                    .frameOptions(frame -> frame.disable())
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())
                 );
 
         return http.build();

@@ -15,11 +15,11 @@ public class User {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private String userId;
+    private String userId; // 사용자가 입력하는 고유한 로그인 ID(중복 불가)
 
     @Column(nullable = false)
-    private String password;
+    private String password; // 인코딩된 비밀번호 저장
 
-    private String name;
-    private String address;
+    private String name; // 사용자 이름
+    private String address; // 사용자 주소
 }
