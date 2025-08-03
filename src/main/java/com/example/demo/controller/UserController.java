@@ -20,8 +20,9 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/join") // 회원가입 요청 처리
-    public UserJoinResponse join(@RequestBody UserJoinRequest request) {
-        return userService.register(request);
+    public ResponseEntity<UserJoinResponse> join(@RequestBody UserJoinRequest request) {
+        UserJoinResponse response = userService.register(request);
+        return ResponseEntity.status(201).body(response);
     }
 
     @PostMapping("/login") // 로그인 요청 처리
