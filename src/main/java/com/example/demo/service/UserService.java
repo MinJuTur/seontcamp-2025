@@ -57,6 +57,8 @@ public class UserService {
             throw new CustomException("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED.value());
         }
 
-        return jwtUtil.generateToken(userId);
+        kafkaProducer.send("user-logged-in", user.getUserId()); // Kafka에 로그인 성공 메세지 전송
+
+        return jwtUtil.generateToken(userId);  // 로그인 성공 시 JWT 토큰 반환
     }
 }
