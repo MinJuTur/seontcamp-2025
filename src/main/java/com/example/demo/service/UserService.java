@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.request.UserJoinRequest;
 import com.example.demo.dto.response.UserJoinResponse;
 import com.example.demo.entity.User;
+import com.example.demo.entity.UserRole;
 import com.example.demo.exception.CustomException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.util.JwtUtil;
@@ -35,6 +36,7 @@ public class UserService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .name(request.getName())
                 .address(request.getAddress())
+                .role(UserRole.USER) // 기본값은 일반 사용자
                 .build();
         userRepository.save(user);
 
@@ -59,6 +61,6 @@ public class UserService {
 
         kafkaProducer.send("user-logged-in", user.getUserId()); // Kafka에 로그인 성공 메세지 전송
 
-        return jwtUtil.generateToken(userId);  // 로그인 성공 시 JWT 토큰 반환
+        return jwtUtil.generateToken(userId, user.getRole().name());  // 로그인 성공 시 JWT 토큰 반환
     }
 }

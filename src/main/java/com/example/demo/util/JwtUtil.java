@@ -14,9 +14,10 @@ public class JwtUtil {
     private final long EXPIRATION_MS = 1000 * 60 * 60 * 3; // 토큰 유효 시간: 3H
 
     // JWT 토큰 생성 메서드(로그인 시 사용)
-    public String generateToken(String userId) {
+    public String generateToken(String userId, String role) {
         return Jwts.builder()
                 .setSubject(userId)
+                .claim("role", role)
                 .setIssuedAt(new Date()) // 토큰 발급 시간
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS)) // 만료 시간
                 .signWith(key) // 서명에 사용할 키 설정
@@ -26,6 +27,11 @@ public class JwtUtil {
     // 사용자 ID 추출 메서드
     public String getUserIdFromToken(String token) {
         return parseClaims(token).getBody().getSubject();
+    }
+
+    // 역할 추출 메서드
+    public String getRoleFromToken(String token) {
+        return parseClaims(token).getBody().get("role", String.class);
     }
 
     // JWT 유효성 검사 메서드

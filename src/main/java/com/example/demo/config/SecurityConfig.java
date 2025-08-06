@@ -36,6 +36,7 @@ public class SecurityConfig { // 애플리케이션 시작 시 단 한 번 실�
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(
                         org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 // 요청별 인증 및 접근 권한 설정
@@ -44,6 +45,10 @@ public class SecurityConfig { // 애플리케이션 시작 시 단 한 번 실�
                         .requestMatchers(HttpMethod.POST, "/api/users/join").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        // 관리자만 접근 가능한 경로
+                        .requestMatchers("/**/admin/**").hasRole("ADMIN")
+                        // 일반 사용자도 접근 가능한 경로
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 // 인증이 필요한 요청에 대해 JwtFilter가 먼저 실행되도록 필터 체인 구성
