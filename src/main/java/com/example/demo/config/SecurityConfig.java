@@ -41,14 +41,17 @@ public class SecurityConfig { // 애플리케이션 시작 시 단 한 번 실�
                         org.springframework.security.config.http.SessionCreationPolicy.STATELESS))
                 // 요청별 인증 및 접근 권한 설정
                 .authorizeHttpRequests(auth -> auth
-                        // 회원가입, 로그인, H2 콘솔은 인증 없이 접근 허용
+                        // 인증 없이 접근 허용
                         .requestMatchers(HttpMethod.POST, "/api/users/join").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        // 관리자만 접근 가능한 경로
-                        .requestMatchers("/**/admin/**").hasRole("ADMIN")
-                        // 일반 사용자도 접근 가능한 경로
-                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/test/public").permitAll()
+
+                        // 역할에 따른 접근 제어
+                        .requestMatchers("/api/test/admin").hasRole("ADMIN")
+                        .requestMatchers("/api/test/user").hasAnyRole("USER", "ADMIN")
+
+                        // 그 외 모든 요청은 인증 필요
                         .anyRequest().authenticated()
                 )
                 // 인증이 필요한 요청에 대해 JwtFilter가 먼저 실행되도록 필터 체인 구성
